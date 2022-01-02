@@ -1,0 +1,3368 @@
+%!PS-Adobe-3.0
+%%Title: lab6.c
+%%For: 
+%%Creator: a2ps version 4.14
+%%CreationDate: Fri Dec  3 12:59:17 2021
+%%BoundingBox: 24 24 571 818
+%%DocumentData: Clean7Bit
+%%Orientation: Landscape
+%%Pages: 11
+%%PageOrder: Ascend
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontType get 0 eq {
+    currentfont /FontMatrix get 3 get
+  }{
+    currentfont /FontMatrix get 3 get 1000 mul
+  } ifelse
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% composite fonts for ASCII-EUC mixed strings
+% Version 1.2 1/31/1990
+% Original Ken'ichi HANDA (handa@etl.go.jp)
+% Modified Norio Katayama (katayama@rd.nacsis.ac.jp),1998
+% Extend & Fix Koji Nakamaru (maru@on.cs.keio.ac.jp), 1999
+% Anyone can freely copy, modify, distribute this program.
+
+/copyfont {	% font-dic extra-entry-count  copyfont  font-dic
+	1 index maxlength add dict begin
+	{	1 index /FID ne 2 index /UniqueID ne and
+		{def} {pop pop} ifelse
+	} forall
+	currentdict
+	end
+} bind def
+
+/compositefont { % ASCIIFontName EUCFontName RomanScale RomanOffset Rot(T/F) compositefont font
+    /RomanRotation exch def
+    /RomanOffset exch def
+    /RomanScale exch def
+    userdict /fixeucfont_dict known not {
+	userdict begin
+	    /fixeucfont_dict 2 dict begin
+		/UpperByteEncoding [
+		    16#00 1 16#20 { pop 0 } for
+		    16#21 1 16#28 { 16#20 sub } for
+		    16#29 1 16#2F { pop 0 } for
+		    16#30 1 16#74 { 16#27 sub } for
+		    16#75 1 16#FF { pop 0 } for
+		] def
+	        /LowerByteEncoding [
+		    16#00 1 16#A0 { pop /.notdef } for
+		    16#A1 1 16#FE { 16#80 sub 16 2 string cvrs
+				    (cXX) dup 1 4 -1 roll
+				    putinterval cvn } for
+		    /.notdef
+		] def
+		currentdict
+	    end def
+	end
+    } if
+    findfont dup /FontType get 0 eq {
+	14 dict begin
+	    %
+	    % 7+8 bit EUC font
+	    %
+	    12 dict begin
+		/EUCFont exch def
+		/FontInfo (7+8 bit EUC font) readonly def
+		/PaintType 0 def
+		/FontType 0 def
+		/FontMatrix matrix def
+		% /FontName
+		/Encoding fixeucfont_dict /UpperByteEncoding get def
+		/FMapType 2 def
+		EUCFont /WMode known
+		{ EUCFont /WMode get /WMode exch def }
+		{ /WMode 0 def } ifelse
+		/FDepVector [
+		    EUCFont /FDepVector get 0 get
+		    [ 16#21 1 16#28 {} for 16#30 1 16#74 {} for ]
+		    {
+			13 dict begin
+			    /EUCFont EUCFont def
+			    /UpperByte exch 16#80 add def	
+			    % /FontName
+			    /FontInfo (EUC lower byte font) readonly def
+			    /PaintType 0 def
+			    /FontType 3 def
+			    /FontMatrix matrix def
+			    /FontBBox {0 0 0 0} def
+			    /Encoding
+				fixeucfont_dict /LowerByteEncoding get def
+			    % /UniqueID
+			    % /WMode
+			    /BuildChar {
+				gsave
+				exch dup /EUCFont get setfont
+				/UpperByte get
+				2 string
+				dup 0 4 -1 roll put
+				dup 1 4 -1 roll put
+				dup stringwidth setcharwidth
+				0 0 moveto show
+				grestore
+			    } bind def
+			    currentdict
+			end
+			/lowerbytefont exch definefont
+		    } forall
+		] def
+		currentdict
+	    end
+	    /eucfont exch definefont
+	    exch
+	    findfont 1 copyfont dup begin
+		RomanRotation {
+			/FontMatrix FontMatrix
+			[ 0 RomanScale neg RomanScale 0 RomanOffset neg 0 ]
+			matrix concatmatrix def
+		}{
+			/FontMatrix FontMatrix
+			[ RomanScale 0 0 RomanScale 0 RomanOffset ] matrix concatmatrix
+			def
+			/CDevProc
+			    {pop pop pop pop 0 exch -1000 exch 2 div 880} def
+		} ifelse
+	    end
+	    /asciifont exch definefont
+	    exch
+	    /FDepVector [ 4 2 roll ] def
+	    /FontType 0 def
+	    /WMode 0 def
+	    /FMapType 4 def
+	    /FontMatrix matrix def
+	    /Encoding [0 1] def
+	    /FontBBox {0 0 0 0} def
+%	    /FontHeight 1.0 def % XXXX
+	    /FontHeight RomanScale 1.0 ge { RomanScale }{ 1.0 } ifelse def
+	    /Descent -0.3 def   % XXXX
+	    currentdict
+	end
+	/tmpfont exch definefont
+	pop
+	/tmpfont findfont
+    }{
+	pop findfont 0 copyfont
+    } ifelse
+} def	
+
+/slantfont {	% FontName slant-degree  slantfont  font'
+    exch findfont 1 copyfont begin
+    [ 1 0 4 -1 roll 1 0 0 ] FontMatrix exch matrix concatmatrix
+    /FontMatrix exch def
+    currentdict
+    end
+} def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 595 def
+/sw 842 def
+/llx 24 def
+/urx 818 def
+/ury 571 def
+/lly 24 def
+/#copies 1 def
+/th 15.000000 def
+/fnfs 11 def
+/bfs 8.005733 def
+/cw 4.803440 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 81.400000 mul
+def
+/ph
+   501.959430 th add
+def
+/pmw urx llx sub pw 2 mul sub 1 div def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+  dup pmw add pw add
+] def
+/y [
+  pmh ph add 0 mul ph add
+  dup
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 0 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1-2) 1
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(// lab6.c ) c n
+(// F. Orrico Scognamiglio) N
+(// 11.27.2021) N
+() p n
+(//  HARDWARE SETUP:) c n
+(//  PORTA is connected to the segments of the LED display. and to the pushbutton) N
+(s.) N
+(//  PORTA.0 corresponds to segment a, PORTA.1 corresponds to segement b, etc.) N
+(//  PORTB bits 4-6 go to a,b,c inputs of the 74HC138.) N
+(//  PORTB bit 7 goes to the PWM transistor base and enable of the bargraph.) N
+(//  PORTB bits 0-3 go to the bar graph and bit 1 also goes to the encoder clock) N
+(//) S 8 T (PORTE pin 6 goes to the Shift / Load of the encoder board) N
+(// ) S 8 T (Currently, all pins of PORTA and PORTB are in use.) N
+() p n
+(//) c 8 T (PORTF bit 0 is Photocell ADC) N
+(//  PORTD bit 4 is Alarm PWM) N
+(//  PORTE bit 3 is Volume Control) N
+() p n
+(// Counter 0 used to measure seconds) c n
+(// Counter 1 used to Alarm PWM) N
+(// Counter 2 used to Dimming PWM) N
+(// Counter 3 used to Volume PWM) N
+() p n
+(//Pressing SW0 toggles set_clock option to change time \(minute based\). This rese) c n
+(ts seconds to 0) N
+(//Pressing SW1 toggles set_alarm option to set the alarm time \(does not enable a) N
+(larm\).) N
+(//set_clock and set_alarm are never enabled at the same time. if set_alarm is on) N
+(, and set_clock is turned on, set_alarm is turned off) N
+(//and vice versa.) N
+(//Pressing SW2 arms or disarms the alarm) N
+(//Pressing SW3 enables 10s snooze) N
+() p n
+(// PORTD bit 0 is SCL) c n
+(// PORTD bit 1 is SDA) N
+() p n
+(// PORTE bit 0 is RX) c n
+(// PORTE bit 1 is TX) N
+() p n
+(#define) K
+( F_CPU 16000000UL ) p
+(// cpu speed in hertz ) c n
+(#define) K
+( TRUE 1) p n
+(#define) K
+( FALSE 0) p n
+(#define) K
+( NO_LEAD_ZERO) p n
+(//#define Trevors_Board) c n
+(#define) K
+( MASTER) p n
+() N
+(#include) K
+( <avr/io.h>) p n
+(#include) K
+( <util/delay.h>) p n
+(#include) K
+( <avr/interrupt.h>) p n
+(#include) K
+( <string.h>) p n
+(#include) K
+( <stdlib.h>) p n
+(#include) K
+( ") p
+(hd44780.h) str
+(") p n
+(#include) K
+( ") p
+(lm73_functions_skel.h) str
+(") p n
+(#include) K
+( ") p
+(twi_master.h) str
+(") p n
+(#include) K
+( ") p
+(uart_functions.h) str
+(") p n
+(#include) K
+( ") p
+(si4734.h) str
+(") p n
+() N
+(//for port B, define the selector values and pwm) c n
+(#define) K
+( SEL_0 0b00010000 ) p
+(//Pin B4 active \(A\)) c n
+(#define) K
+( SEL_1 0b00100000 ) p
+(//Pin B5 active \(B\)) c n
+(#define) K
+( SEL_2 0b01000000 ) p
+(//Pin B6 active \(C\)) c n
+(#define) K
+( PWM_0 0b10000000 ) p
+(//Pin B7 PWM control pin \(R30\)) c n
+(lab6.c) (Page 1/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(//For port A, define values for each display segments \(one-hot encoded for simpl) c n
+(icity\)) N
+(#define) K
+( SEG_A 0b00000001 ) p
+(//Pin A0 \(A\)) c n
+(#define) K
+( SEG_B 0b00000010 ) p
+(//Pin A1 \(B\)) c n
+(#define) K
+( SEG_C 0b00000100 ) p
+(//Pin A2 \(C\)) c n
+(#define) K
+( SEG_D 0b00001000 ) p
+(//Pin A3 \(D\)) c n
+(#define) K
+( SEG_E 0b00010000 ) p
+(//Pin A4 \(E\)) c n
+(#define) K
+( SEG_F 0b00100000 ) p
+(//Pin A5 \(F\)) c n
+(#define) K
+( SEG_G 0b01000000 ) p
+(//Pin A6 \(G\)) c n
+(#define) K
+( SEG_DP 0b10000000 ) p
+(//Pin A7 \(DP\)) c n
+() p n
+(//now define segment values for each decimal \(\(Remember to ~ values before assig) c n
+(ning\)) N
+(#define) K
+( _zero \(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F\)) p n
+(#define) K
+( _one \(SEG_B | SEG_C\)) p n
+(#define) K
+( _two \(SEG_A | SEG_B | SEG_G | SEG_E | SEG_D\)) p n
+(#define) K
+( _three \(SEG_A | SEG_B | SEG_G | SEG_C | SEG_D\)) p n
+(#define) K
+( _four \(SEG_F | SEG_G | SEG_B | SEG_C\)) p n
+(#define) K
+( _five \(SEG_A | SEG_F | SEG_G | SEG_C | SEG_D\)) p n
+(#define) K
+( _six \(SEG_A | SEG_F | SEG_E | SEG_D | SEG_C | SEG_G\)) p n
+(#define) K
+( _seven \(SEG_A | SEG_B | SEG_C\)) p n
+(#define) K
+( _eight \(SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G\)) p n
+(#define) K
+( _nine \(SEG_A | SEG_B | SEG_G | SEG_F | SEG_C\)) p n
+(#define) K
+( _a 0x88) p n
+(#define) K
+( _b 0x83) p n
+(#define) K
+( _c 0xC6) p n
+(#define) K
+( _d 0xA1) p n
+(#define) K
+( _e 0x86) p n
+(#define) K
+( _f 0x8E) p n
+(#define) K
+( _colon \(SEG_A | SEG_B\) ) p n
+() N
+(//Definitions for Lab4) c n
+(#define) K
+( alarm_bit 0x10) p n
+(#define) K
+( photocell_bit 0x01) p n
+(#define) K
+( volume_bit 0x80) p n
+(#define) K
+( colon_off 16) p n
+(#define) K
+( colon_on 99) p n
+(#define) K
+( alarm_freq 17500) p n
+() N
+() N
+(//Global Variables) c n
+() p n
+(//holds current displayed count) c n
+(uint16_t ) p 16 T () S 24 T () S 32 T (encoder_count;) N
+(uint8_t ) S 16 T () S 24 T () S 32 T (segsum_hex_en;) N
+() N
+(//holds what number each display will display) c n
+(uint8_t ) p 16 T () S 24 T () S 32 T (segment_data[5]; ) N
+() N
+(//holds 8-bit encoder value) c n
+(uint8_t ) p 16 T () S 24 T () S 32 T (encoder_data;) N
+() N
+(//holds the state of increase/decrease of the encoders) c n
+(uint8_t ) p 16 T () S 24 T () S 32 T (inc[2] = {0,0};) N
+(#define) K
+( inc_2 inc[0]) p n
+(#define) K
+( inc_4 inc[1]) p n
+() N
+(//holds the output to the bar graph) c n
+(uint8_t ) p 16 T () S 24 T () S 32 T (bargraph_o;) N
+() N
+() N
+(lab6.c) (Page 2/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (1/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(//time information) c n
+(volatile) K
+( ) p
+(typedef) K
+( ) p
+(struct) k
+( time {) p n
+() S 8 T (uint8_t ) S
+(volatile) K
+( seconds;) p n
+() S 8 T (uint8_t ) S
+(volatile) K
+( minutes;) p n
+() S 8 T (uint8_t ) S
+(volatile) K
+( hours;) p n
+(} Time;) N
+() N
+(Time ) S
+(volatile) K
+( ) p 16 T () S 24 T (alarm_time;) N
+(Time ) S
+(volatile) K
+( ) p 16 T () S 24 T (clock_time;) N
+(uint8_t ) S
+(volatile) K
+( ) p 24 T (clock_counter = 0;) N
+(uint8_t ) S
+(volatile) K
+( ) p 24 T (colon_en = colon_off; ) S
+(//\(off at 16, on at 99\)) c n
+(uint8_t ) p
+(volatile) K
+( ) p 24 T (alarm_armed = FALSE;) N
+(uint8_t ) S
+(volatile) K
+( ) p 24 T (alarm_triggered = FALSE;) N
+(uint16_t ) S
+(volatile) K
+( ) p 24 T (snooze_counter = 0;) N
+(uint8_t ) S
+(volatile) K
+( ) p 24 T (snooze_en = FALSE;) N
+() N
+(//changing settings) c n
+(uint8_t ) p
+(volatile) K
+( ) p 24 T (setting_alarm = FALSE;) N
+(uint8_t ) S
+(volatile) K
+( ) p 24 T (setting_time = FALSE;) N
+(uint8_t ) S
+(volatile) K
+() p 24 T (setting_radio = FALSE;) N
+() N
+(//adc) c n
+(uint16_t ) p
+(volatile) K
+( ) p 24 T (adc_voltage;) N
+() N
+(//music) c n
+(uint16_t ) p 16 T () S 24 T () S 32 T (fight_song[] = {19600,18500,15550,11000,20750,16) N
+(500,20750,13050};) N
+(uint8_t ) S
+(volatile) K
+( ) p 24 T (music_idx = 0;) N
+(#define) K
+( max_music_idx 8) p n
+() N
+(//TWI LM73 TEMP) c n
+(extern) K
+( uint8_t ) p 16 T () S 24 T (lm73_wr_buf[2];) N
+(extern) K
+( uint8_t ) p 16 T () S 24 T (lm73_rd_buf[2];) N
+(volatile) K
+( uint16_t ) p 24 T (lm73_tmp_in = 0;) N
+(char) k
+() p 8 T () S 16 T () S 24 T () S 32 T (raw_tmp_val[16] = ") S
+(99) str
+(";) p n
+(char) k
+(    ) p 16 T () S 24 T () S 32 T (lcd_string_array[16];  ) S
+(//holds a string to refre) c n
+(sh the LCD) N
+() p n
+(//USART ) c n
+(uint8_t ) p 16 T () S 24 T (  ) S 32 T (usart_idx = 0;) N
+(volatile) K
+( uint8_t  ) p 24 T (usart_rcv_rdy;) N
+(char) k
+(              ) p 24 T (usart_rx_char; ) N
+(char) k
+(      ) p 16 T () S 24 T () S 32 T (usart_str_array[16] = ") S
+(-1) str
+(";  ) p
+(//holds string to s) c n
+(end to lcd) N
+() p n
+(//RADIO) c n
+(extern) K
+( ) p
+(enum) k
+( radio_band{FM, AM};) p n
+(extern) K
+( ) p
+(volatile) K
+( uint8_t STC_interrupt;) p n
+() N
+(volatile) K
+( ) p
+(enum) k
+( radio_band current_radio_band = FM;) p n
+(volatile) K
+( uint8_t alarm_mode = 0; ) p
+(//Mode 0 = Alarm, 1 = Radio) c n
+(uint8_t si4734_tune_status_buf[8]; ) p
+(//buffer for holding tune_status data  ) c n
+() p n
+(uint16_t eeprom_fm_freq;) N
+(uint16_t eeprom_am_freq;) N
+(uint16_t eeprom_sw_freq;) N
+(uint8_t  eeprom_volume;) N
+() N
+(uint16_t current_fm_freq = 10630;) N
+(uint16_t current_am_freq;) N
+(uint16_t current_sw_freq;) N
+(uint8_t  current_volume;) N
+(lab6.c) (Page 3/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(uint8_t ) S
+(volatile) K
+( volume = 100;) p n
+(uint8_t ) S
+(volatile) K
+( radio_en = FALSE;) p n
+(uint8_t ) S
+(volatile) K
+( freq_change = FALSE;) p n
+(uint8_t ) S
+(volatile) K
+( req_update_ss = FALSE;) p n
+() N
+() N
+(/*TODO*/) c n
+(//) N
+(//) S 8 T (Radio Controls \(Tune, EN/_EN\) - OK) N
+(//) S 8 T (Radio Alarm Mode - OK) N
+(//  Volume change on radio enabled or alarm vs disabled - OK) N
+(//) S 8 T (Volume Knob - OK) N
+(//) N
+() p n
+(void) k
+( toggle_radio\(\){) p n
+() S 8 T () S
+(if) K
+( \(!radio_en\){) p n
+() S 8 T () S 16 T () S
+(//back to default volume) c n
+() p 8 T () S 16 T (set_property\(0x4000, 0x003F\);) N
+() S 8 T () S 16 T (radio_en = TRUE;) N
+() S 8 T (} ) N
+() S 8 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S
+(//set volume to 0) c n
+() p 8 T () S 16 T (set_property\(0x4000, 0x0000\);) N
+() S 8 T () S 16 T (radio_en = FALSE;) N
+() S 8 T (}) N
+(}) N
+() N
+(//******************************************************************************) c n
+(//                            set_PORTB) N
+(// Sets the derired selector to PORTB \(1-4\) or enables T-BUFFER \(default\)) N
+(// Input: 1-4 \(from right to left, thousands are 4\) select digit, default enable) N
+( tristate buffer) N
+(//) N
+(void) k
+( set_PORTB \(uint8_t value\) {) p n
+() S 8 T () S
+(switch) K
+( \(value\) {) p n
+() S 8 T () S 16 T () S
+(case) K
+( 5:) p n
+() S 8 T () S 16 T () S 24 T (PORTB |= SEL_2; ) S
+(//enable select 2) c n
+() p 8 T () S 16 T () S 24 T (PORTB &= ~\(SEL_0 | SEL_1\); ) S
+(//disable select 0 and 1) c n
+() p 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 4:) p n
+() S 8 T () S 16 T () S 24 T (PORTB |= SEL_0 | SEL_1;) N
+() S 8 T () S 16 T () S 24 T (PORTB &= ~\(SEL_2\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 3:) p n
+() S 8 T () S 16 T (  PORTB |= SEL_1;) N
+() S 8 T () S 16 T (  PORTB &= ~\(SEL_2 | SEL_0\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 2:) p n
+() S 8 T () S 16 T () S 24 T (PORTB |= SEL_0;) N
+() S 8 T () S 16 T () S 24 T (PORTB &= ~\(SEL_1 | SEL_2\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 1:) p n
+() S 8 T () S 16 T () S 24 T (PORTB &= ~\(SEL_0 | SEL_1 | SEL_2\); ) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(default) K
+(: ) p
+(// T-Buffer enable) c n
+() p 8 T () S 16 T () S 24 T (#ifndef Trevors_Board) N
+() S 8 T () S 16 T () S 24 T (PORTB |= SEL_0 | SEL_1 | SEL_2;) N
+() S 8 T () S 16 T () S 24 T (#endif) N
+() S 8 T () S 16 T () S 24 T (#ifdef Trevors_Board) N
+() S 8 T () S 16 T () S 24 T (PORTB |= SEL_0 | SEL_2;) N
+() S 8 T () S 16 T () S 24 T (PORTB &= ~\(SEL_1\);) N
+(lab6.c) (Page 4/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (2/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5-6) 3
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T (#endif) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T (}) N
+(}) N
+() N
+(/***********************************************************************/) c n
+(//                              update_lcd                             ) N
+(//Updates the LCD display to show important information) N
+(void) k
+( update_lcd\(\){) p n
+() S 8 T () S
+(//clear_display\(\);) c n
+() p 8 T (cursor_home\(\);) N
+() S 8 T (string2lcd\(") S
+(A:) str
+("\);) p n
+() S 8 T () S
+(if) K
+( \(snooze_en\){) p n
+() S 8 T () S 16 T (string2lcd\(") S
+(S) str
+("\);) p n
+() S 8 T (}) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+( \(alarm_armed && !alarm_triggered\){) p n
+() S 8 T () S 16 T (string2lcd\(") S
+(Y) str
+("\); ) p
+(//armed) c n
+() p 8 T (}) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+( \(alarm_armed && alarm_triggered\){) p n
+() S 8 T () S 16 T (string2lcd\(") S
+(R) str
+("\); ) p
+(//ring) c n
+() p 8 T (}) N
+() S 8 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T (string2lcd\(") S
+(N) str
+("\); ) p
+(//not armed) c n
+() p 8 T (}) N
+() S 8 T (string2lcd\(") S
+( AM:) str
+("\);) p n
+() S 8 T () S
+(if) K
+( \(alarm_mode == 1\){ ) p
+(//Radio Mode) c n
+() p 8 T () S 16 T (string2lcd\(") S
+(R) str
+("\);) p n
+() S 8 T (} ) N
+() S 8 T () S
+(else) K
+( { ) p
+(//Song Mode) c n
+() p 8 T () S 16 T (string2lcd\(") S
+(S) str
+("\);) p n
+() S 8 T (}) N
+(}) N
+() N
+(uint8_t to_F\(uint8_t C\){) N
+() S 8 T () S
+(return) K
+( \(9*C\)/5 + 32;) p n
+(}) N
+() N
+(void) k
+( update_tmp_lcd\(\){) p n
+() S 8 T () S
+(static) K
+( ) p
+(volatile) K
+( uint8_t far = FALSE;) p n
+() S 8 T (line2_col1\(\);) N
+() S 8 T (string2lcd\(") S
+( ) str
+("\);) p n
+() S 8 T () S
+(if) K
+( \(far\) {) p n
+() S 8 T () S 16 T (uint8_t num = to_F\(atoi\(lcd_string_array\)\);) N
+() S 8 T () S 16 T (itoa\(num, lcd_string_array, 10\);) N
+() S 8 T () S 16 T (string2lcd\(lcd_string_array\);) N
+() S 8 T () S 16 T (string2lcd\(") S
+(F) str
+("\);) p n
+() S 8 T () S 16 T (far = FALSE;) N
+() S 8 T (} ) N
+() S 8 T () S
+(else) K
+( {string2lcd\(lcd_string_array\); string2lcd\(") p
+(C) str
+("\); far = TRUE;}) p n
+() S 8 T (string2lcd\(") S
+( ) str
+("\);) p n
+() S 8 T () S
+(if) K
+( \(usart_rcv_rdy\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(far\){) p n
+() S 8 T () S 16 T () S 24 T (uint8_t num = to_F\(atoi\(usart_str_array\)\);) N
+() S 8 T () S 16 T () S 24 T (itoa\(num, usart_str_array, 10\);) N
+() S 8 T () S 16 T () S 24 T (string2lcd\(usart_str_array\);) N
+() S 8 T () S 16 T () S 24 T (string2lcd\(") S
+(F) str
+("\);) p n
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (string2lcd\(usart_str_array\);) N
+() S 8 T () S 16 T () S 24 T (string2lcd\(") S
+(C) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T (usart_rcv_rdy = 0;) N
+() S 8 T () S 16 T (}) N
+(lab6.c) (Page 5/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (} ) S
+(else) K
+( {) p n
+() S 8 T () S 16 T (string2lcd\(") S
+(NC ) str
+("\);) p n
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(radio_en\){) p n
+() S 8 T () S 16 T () S
+(//static last_freq = 0;) c n
+() p 8 T () S 16 T (req_update_ss = TRUE;) N
+() S 8 T () S 16 T () S
+(//if \(last_freq != current_fm_freq\){) c n
+() p 8 T () S 16 T () S 24 T (string2lcd\(") S
+( SS:) str
+("\);) p n
+() S 8 T () S 16 T () S 24 T () S
+(int) k
+(2lcd\(\() p
+(int) k
+(\)si4734_tune_status_buf[4]\);) p n
+() S 8 T () S 16 T () S 24 T () S
+(//last_freq = current_fm_freq;) c n
+() p 8 T () S 16 T () S
+(//}) c n
+() p 8 T (} ) S
+(else) K
+( {) p n
+() S 8 T () S 16 T (string2lcd\(") S
+(      ) str
+("\);) p n
+() S 8 T (}) N
+(}) N
+() N
+(//******************************************************************************) c n
+(//                            set_PORTA_7seg) N
+(//) S 8 T (Sets the segments within a segment \(number 0-9\)) N
+(//) S 8 T (input: number to be displayed \(0-9\), if other number, segment is cleared) N
+(//  ) N
+(void) k
+( set_PORTA_7seg_rad\(uint8_t value\) {) p n
+() S 8 T (uint8_t dot = 0;) N
+() S 8 T () S
+(if) K
+( \(setting_radio\){) p n
+() S 8 T () S 16 T (dot = SEG_DP;) N
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(switch) K
+(\(value\) {) p n
+() S 8 T () S 16 T () S
+(case) K
+( 0:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_zero | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 1:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_one | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 2:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_two | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 3:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_three | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p 32 T () N
+() S 8 T () S 16 T () S
+(case) K
+( 4:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_four | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 5:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_five | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 6:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_six | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 7:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_seven | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 8:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_eight | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 9:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_nine | dot\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 10:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _a;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 11:) p n
+(lab6.c) (Page 6/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (3/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (7-8) 4
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T (PORTA = _b;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 12:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _c;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 13:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _d;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 14:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _e;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 15:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _f;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 99:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_colon\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(default) K
+(: ) p
+(//clear) c n
+() p 8 T () S 16 T () S 24 T (PORTA = 0xff;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T (}) N
+(}) N
+() N
+(void) k
+( set_PORTA_7seg\(uint8_t value\) {) p n
+() S 8 T () N
+() S 8 T () S
+(switch) K
+(\(value\) {) p n
+() S 8 T () S 16 T () S
+(case) K
+( 0:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_zero\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 1:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_one\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 2:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_two\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 3:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_three\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p 32 T () N
+() S 8 T () S 16 T () S
+(case) K
+( 4:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_four\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 5:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_five\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 6:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_six\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 7:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_seven\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 8:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_eight\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 9:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_nine\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 10:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _a;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 11:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _b;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+(lab6.c) (Page 7/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S
+(case) K
+( 12:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _c;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 13:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _d;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 14:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _e;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 15:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = _f;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 99:) p n
+() S 8 T () S 16 T () S 24 T (PORTA = ~\(_colon\);) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(default) K
+(: ) p
+(//clear) c n
+() p 8 T () S 16 T () S 24 T (PORTA = 0xff;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T (}) N
+(}) N
+() N
+(//******************************************************************************) c n
+(*****) N
+(//                                   segsum_radio                               ) N
+(     ) N
+(//takes a 16-bit binary input value and places the appropriate equivalent 4 digi) N
+(t ) N
+(//BCD segment code in the array segment_data for display.                       ) N
+(//array is loaded at exit as:  |digit3|digit2|colon|digit1|digit0|) N
+(void) k
+( segsum_radio\(uint16_t sum\) {) p n
+() S 8 T () S
+(//determine how many digits there are ) c n
+() p n
+() S 8 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T (uint16_t val = sum/10;) N
+() S 8 T (uint8_t thousands) S 32 T (=) S 40 T (val/1000;) N
+() S 8 T (uint8_t hundreds ) S 32 T (=) S 40 T (\(val%1000\)/100;) N
+() S 8 T (uint8_t tens ) S 24 T () S 32 T (=) S 40 T (\(val%100\)/10;) N
+() S 8 T (uint8_t ones) S 24 T () S 32 T (=) S 40 T (\(val%10\);) N
+() S 8 T () S
+(//blank out leading zero digits ) c n
+() p 8 T (segment_data[0] = ones;) N
+() S 8 T (segment_data[1] = tens;) N
+() S 8 T (segment_data[2] = 16;) N
+() S 8 T (segment_data[3] = hundreds;) N
+() S 8 T (segment_data[4] = thousands;) N
+() S 8 T (#ifdef NO_LEAD_ZERO) N
+() S 8 T () S
+(if) K
+( \(val < 1000\) segment_data[4] = 16;) p n
+() S 8 T () S
+(if) K
+( \(val < 100\)) p 24 T (segment_data[3] = 16;) N
+() S 8 T () S
+(if) K
+( \(val < 10\)) p 24 T (segment_data[1] = 16;) N
+() S 8 T (#endif) N
+() S 8 T () N
+(  ) S
+(//now move data to right place for misplaced colon position) c n
+(}) p
+(//segment_sum) c n
+() p n
+() N
+(//******************************************************************************) c n
+(*****) N
+(//                                   segment_sum                                ) N
+(    ) N
+(//takes a 16-bit binary input value and places the appropriate equivalent 4 digi) N
+(t ) N
+(//BCD segment code in the array segment_data for display.                       ) N
+(//array is loaded at exit as:  |digit3|digit2|colon|digit1|digit0|) N
+(lab6.c) (Page 8/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (4/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (9-10) 5
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(void) k
+( segsum\(uint16_t sum\) {) p n
+() S 8 T () S
+(//determine how many digits there are ) c n
+() p n
+() S 8 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T (uint8_t thousands) S 32 T (=) S 40 T (sum/1000;) N
+() S 8 T (uint8_t hundreds ) S 32 T (=) S 40 T (\(sum%1000\)/100;) N
+() S 8 T (uint8_t tens ) S 24 T () S 32 T (=) S 40 T (\(sum%100\)/10;) N
+() S 8 T (uint8_t ones) S 24 T () S 32 T (=) S 40 T (\(sum%10\);) N
+() S 8 T () S
+(//blank out leading zero digits ) c n
+() p 8 T (segment_data[0] = ones;) N
+() S 8 T (segment_data[1] = tens;) N
+() S 8 T (segment_data[2] = 0;) N
+() S 8 T (segment_data[3] = hundreds;) N
+() S 8 T (segment_data[4] = thousands;) N
+() S 8 T (#ifdef NO_LEAD_ZERO) N
+() S 8 T () S
+(if) K
+( \(sum < 1000\) segment_data[4] = 16;) p n
+() S 8 T () S
+(if) K
+( \(sum < 100\)) p 24 T (segment_data[3] = 16;) N
+() S 8 T () S
+(if) K
+( \(sum < 10\)) p 24 T (segment_data[1] = 16;) N
+() S 8 T (#endif) N
+() S 8 T () N
+(  ) S
+(//now move data to right place for misplaced colon position) c n
+(}) p
+(//segment_sum) c n
+() p n
+(//******************************************************************************) c n
+(*****) N
+(//                                   segment_sum_hex                            ) N
+(    ) N
+(//takes a 16-bit binary input value and places the appropriate equivalent 4 digi) N
+(t hex) N
+(//BCD segment code in the array segment_data for display.                       ) N
+(//array is loaded at exit as:  |digit3|digit2|colon|digit1|digit0|) N
+(void) k
+( segsum_hex\(uint16_t sum\) {) p n
+() S 8 T () S
+(//determine how many digits there are ) c n
+() p n
+() S 8 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T (uint8_t low_8 = sum & 0xff;) N
+() S 8 T (uint8_t high_8 = \(sum>>8\);) N
+() S 8 T () N
+() S 8 T (uint8_t low_4_1 = low_8 & 0x0f;) N
+() S 8 T (uint8_t low_4_2 = \(low_8>>4\);) N
+() S 8 T (uint8_t high_4_1 = high_8 & 0x0f;) N
+() S 8 T (uint8_t high_4_2 = \(high_8>>4\);) N
+() S 8 T () S
+(//blank out leading zero digits ) c n
+() p 8 T (segment_data[0] = low_4_1;) N
+() S 8 T (segment_data[1] = low_4_2;) N
+() S 8 T (segment_data[2] = 0;) N
+() S 8 T (segment_data[3] = high_4_1;) N
+() S 8 T (segment_data[4] = high_4_2;) N
+() S 8 T () S 16 T (#ifdef NO_LEAD_ZERO) N
+() S 8 T (segment_data[4] = 16;) N
+() S 8 T () S
+(if) K
+( \(high_4_2 == 0\)) p 32 T (segment_data[4] = 16;) N
+() S 8 T () S
+(if) K
+( \(high_4_1 == 0\)) p 32 T (segment_data[3] = 16;) N
+() S 8 T () S
+(if) K
+( \(low_4_2 == 0\)) p 32 T (segment_data[1] = 16;) N
+() S 8 T (#endif) N
+(}) S
+(//segment_sum) c n
+() p n
+(//******************************************************************************) c n
+(*****) N
+(//                                   segment_sum_clock                          ) N
+(          ) N
+(void) k
+( segsum_clock\(\) {) p n
+() S 8 T () S
+(if) K
+( \(!setting_alarm && !setting_radio\){) p n
+(lab6.c) (Page 9/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S
+(//determine how many digits there are ) c n
+() p 8 T () S 16 T (uint8_t sum = clock_time.minutes;) N
+() S 8 T () S 16 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T () S 16 T (uint8_t tens ) S 32 T () S 40 T (=) S 48 T (sum/10;) N
+() S 8 T () S 16 T (uint8_t ones) S 32 T () S 40 T (=) S 48 T (sum%10;) N
+() S 8 T () S 16 T () S
+(//blank out leading zero digits ) c n
+() p 8 T () S 16 T (segment_data[0] = ones;) N
+() S 8 T () S 16 T (segment_data[1] = tens;) N
+() S 8 T () S 16 T (segment_data[2] = colon_en;) N
+() S 8 T () S 16 T (sum = clock_time.hours;) N
+() S 8 T () S 16 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T () S 16 T (tens ) S 24 T () S 32 T (=) S 40 T (sum/10;) N
+() S 8 T () S 16 T (ones) S 24 T () S 32 T (=) S 40 T (sum%10;) N
+() S 8 T () S 16 T (segment_data[3] = ones;) N
+() S 8 T () S 16 T (segment_data[4] = tens;) N
+() S 8 T (} ) N
+() S 8 T () S
+(else) K
+( ) p
+(if) K
+(\(setting_alarm\) {) p n
+() S 8 T () S 16 T () S
+(//determine how many digits there are ) c n
+() p 8 T () S 16 T (uint8_t sum = alarm_time.minutes;) N
+() S 8 T () S 16 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T () S 16 T (uint8_t tens ) S 32 T () S 40 T (=) S 48 T (sum/10;) N
+() S 8 T () S 16 T (uint8_t ones) S 32 T () S 40 T (=) S 48 T (sum%10;) N
+() S 8 T () S 16 T () S
+(//blank out leading zero digits ) c n
+() p 8 T () S 16 T (segment_data[0] = ones;) N
+() S 8 T () S 16 T (segment_data[1] = tens;) N
+() S 8 T () S 16 T (segment_data[2] = colon_en;) N
+() S 8 T () S 16 T (sum = alarm_time.hours;) N
+() S 8 T () S 16 T () S
+(//break up decimal sum into 4 digit-segments) c n
+() p 8 T () S 16 T (tens ) S 24 T () S 32 T (=) S 40 T (sum/10;) N
+() S 8 T () S 16 T (ones) S 24 T () S 32 T (=) S 40 T (sum%10;) N
+() S 8 T () S 16 T (segment_data[3] = ones;) N
+() S 8 T () S 16 T (segment_data[4] = tens;) N
+() S 8 T (} ) S
+(else) K
+( ) p
+(if) K
+( \(setting_radio\){) p n
+() S 8 T () S 16 T (segsum_radio\(current_fm_freq\);) N
+() S 8 T (}) N
+() S 8 T () N
+(  ) S
+(//now move data to right place for misplaced colon position) c n
+(}) p
+(//segment_sum) c n
+() p n
+() N
+(//******************************************************************************) c n
+(//                            debounce_switch                                   ) N
+(   ) N
+(//Checks the state of the button number passed to it. It shifts in ones till   ) N
+(//the button is pushed. Function returns a 1 only once per debounced button    ) N
+(//push so a debounce and toggle function can be implemented at the same time.  ) N
+(//Adapted to check all buttons from Ganssel's "Guide to Debouncing"            ) N
+(//Expects active low pushbuttons on PINA port.  Debounce time is determined by ) N
+(//external loop delay times 12. ) N
+(//) N
+(uint8_t debounce_switch\(uint8_t pressed_button_idx\){) p n
+() S 8 T () S
+(static) K
+( uint16_t state[8] = {0}; ) p
+(//holds present state) c n
+() p 8 T (state[pressed_button_idx] = \(\(state[pressed_button_idx] << 1\) | \(! bit_i) N
+(s_clear\(PINA, pressed_button_idx\)\) | 0xE000\);) N
+() S 8 T () S
+(if) K
+( \(state[pressed_button_idx] == 0xF000\) ) p
+(return) K
+( 1;) p n
+() S 8 T () S
+(return) K
+( 0;) p n
+(}) N
+() N
+(/***********************************************************************/) c n
+(//                            spi_init                               ) N
+(//Initalizes the SPI port on the mega128. Does not do any further   ) N
+(//external device specific initalizations.  Sets up SPI to be:                  ) N
+(lab6.c) (Page 10/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (5/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (11-12) 6
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(      ) c n
+(//master mode, clock=clk/2, cycle half phase, low polarity, MSB first) N
+(//interrupts disabled, poll SPIF bit in SPSR to check xmit completion) N
+(/***********************************************************************/) N
+(void) k
+( spi_init\() p
+(void) k
+(\){) p n
+(  DDRB  |=   0x07; ) S
+(//Turn on SS, MOSI, SCLK) c n
+(  SPCR = \(1 << SPE\) | \(1 << MSTR\) | \(0 << CPOL\) | \(0 << CPHA\);  ) p
+(//SPI, MAster mo) c n
+(de, low idle, sample on leading edge) N
+(  SPSR  |=   \(1 << SPI2X\); ) p
+(// double speed operation) c n
+( }) p
+(//spi_init) c n
+( ) p n
+(//******************************************************************************) c n
+(*****) N
+() p n
+(/*************************************************************************/) c n
+(//                           ch_enc_cnt) N
+(//) S 8 T (increases or decreases the count and checks if it rolls over or under) N
+(/*************************************************************************/) N
+(void) k
+( ch_enc_cnt\(uint8_t direction\){ ) p
+(//1 up, 0 down) c n
+() p 8 T () S
+(switch) K
+(\(direction\){) p n
+() S 8 T () S 16 T () S
+(case) K
+( 1:) p
+(//up) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(inc_2 == 1 && inc_4 == 1\){}) p n
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( ) p
+(if) K
+( \(inc_2 == 1\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (encoder_count += 2;) N
+() S 8 T () S 16 T () S 24 T (} ) S
+(else) K
+( ) p
+(if) K
+( \(inc_4\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (encoder_count += 4;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+({) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (encoder_count += 1;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(encoder_count > 1023\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (encoder_count -= 1024;) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T () S 16 T () S
+(case) K
+( 0: ) p
+(//down) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(inc_2 == 1 && inc_4 == 1\){}) p n
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( ) p
+(if) K
+( \(inc_2 == 1\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(encoder_count < 2\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (encoder_count = 1022 + encoder_count;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (encoder_count -= 2;) N
+() S 8 T () S 16 T () S 24 T (} ) S
+(else) K
+( ) p
+(if) K
+( \(inc_4\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(encoder_count < 4\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (encoder_count = 1020 + encoder_count;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (encoder_count -= 4;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(encoder_count < 1\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (encoder_count = 1023 + encoder_count;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (encoder_count -= 1;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(break) K
+(;) p n
+() S 8 T (}) N
+(}) N
+() N
+(/*************************************************************************/) c n
+(//                           set_time_) N
+(//) S 8 T (increases \(1\) or decreases \(0\) clock time.) N
+(lab6.c) (Page 11/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/*************************************************************************/) c n
+(void) k
+( set_time_\(uint8_t inc_dec_n\){) p n
+() S 8 T () S
+(if) K
+( \(setting_time\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(inc_dec_n == 1\) {) p n
+() S 8 T () S 16 T () S 24 T (clock_time.seconds = 0;) N
+() S 8 T () S 16 T () S 24 T (clock_time.minutes++;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(clock_time.minutes == 60\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (clock_time.minutes = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (clock_time.hours++;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(clock_time.hours >= 24\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (clock_time.hours = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) S 24 T () N
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (clock_time.seconds = 0;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(clock_time.minutes == 0\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (clock_time.minutes = 59;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(clock_time.hours == 0\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (clock_time.hours = 23;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (clock_time.hours--;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (clock_time.minutes--;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+(}) N
+() N
+(/*************************************************************************/) c n
+(//                           set_alarm_) N
+(//) S 8 T (increases \(1\) or decreases \(0\) alarm time.) N
+(/*************************************************************************/) N
+(void) k
+( set_alarm_\(uint8_t inc_dec_n\){) p n
+() S 8 T () S
+(if) K
+( \(setting_alarm\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(inc_dec_n == 1\) {) p n
+() S 8 T () S 16 T () S 24 T (alarm_time.seconds = 0;) N
+() S 8 T () S 16 T () S 24 T (alarm_time.minutes++;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(alarm_time.minutes == 60\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_time.minutes = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_time.hours++;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(alarm_time.hours >= 24\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (alarm_time.hours = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) S 24 T () N
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (alarm_time.seconds = 0;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(alarm_time.minutes == 0\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_time.minutes = 59;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(alarm_time.hours == 0\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (alarm_time.hours = 23;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (alarm_time.hours--;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_time.minutes--;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+(}) N
+(lab6.c) (Page 12/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (6/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (13-14) 7
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(void) k
+( set_radio\(uint8_t inc_dec_n\){) p n
+() S 8 T () S
+(if) K
+( \(setting_radio\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(inc_dec_n == 1\) { ) p
+(//increase) c n
+() p 8 T () S 16 T () S 24 T (current_fm_freq +=20;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(current_fm_freq > 10790\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (current_fm_freq = 8790;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(//if \(current_fm_freq <= 10790\)) c n
+() p 8 T () S 16 T () S 24 T () S
+(//) c 32 T (current_fm_freq +=20;) N
+() p 8 T () S 16 T (} ) N
+() S 8 T () S 16 T () S
+(else) K
+( { ) p
+(//decrease) c n
+() p 8 T () S 16 T () S 24 T (current_fm_freq -= 20;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(current_fm_freq < 8790\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (current_fm_freq = 10790;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(//if \(current_am_freq >= 8830\)) c n
+() p 8 T () S 16 T () S 24 T () S
+(//) c 32 T (current_fm_freq -= 20;) N
+() p 8 T () S 16 T (}) N
+() S 8 T () S 16 T (freq_change = TRUE;) N
+() S 8 T (}) N
+(}) N
+() N
+(/*************************************************************************/) c n
+(//                           chk_encoder) N
+(//) S 8 T (checks if the encoder increased or decreased and calls increase or decre) N
+(ase) N
+(/*************************************************************************/) N
+(void) k
+( chk_encoder \() p
+(void) k
+(\){) p n
+() S 8 T () S
+(static) K
+( uint8_t prev_L = 0;) p n
+() S 8 T () S
+(static) K
+( uint8_t prev_R = 0;) p n
+() S 8 T () S
+(static) K
+( uint8_t curr_L = 0;) p n
+() S 8 T () S
+(static) K
+( uint8_t curr_R = 0;) p n
+() S 8 T () N
+() S 8 T () S
+(//update previous values) c n
+() p 8 T (prev_L = curr_L;) N
+() S 8 T (prev_R = curr_R;) N
+() S 8 T () N
+() S 8 T () S
+(//update current values) c n
+() p 8 T (curr_L = \(encoder_data & 0x03\);) N
+() S 8 T (curr_R = \(\(encoder_data & 0x0c\) >> 2\);) N
+() S 8 T () N
+() S 8 T () S
+(if) K
+( \(curr_L != prev_L\){ ) p
+(//check state left encoder) c n
+() p 8 T () S 16 T () S
+(//check state count up) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(\(\(prev_L == 0x01\) && \(curr_L == 0x03\)\) || \(\(prev_L == 0x03\) ) p n
+(&& \(curr_L == 0x02\)\) || \(\(prev_L == 0x02\) && \(curr_L == 0x00\)\) || \(\(prev_L == 0x) N
+(00\) && \(curr_L == 0x01\)\)\){) N
+() S 8 T () S 16 T () S 24 T () S
+(//ch_enc_cnt\(1\);) c n
+() p 8 T () S 16 T () S 24 T (set_time_\(1\);) N
+() S 8 T () S 16 T () S 24 T (set_alarm_\(1\);) N
+() S 8 T () S 16 T () S 24 T (set_radio\(1\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(//check state count down) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(\(\(prev_L == 0x02\) && \(curr_L == 0x03\)\) || \(\(prev_L == 0x00\) ) p n
+(&& \(curr_L == 0x01\)\) || \(\(prev_L == 0x01\) && \(curr_L == 0x03\)\) || \(\(prev_L == 0x) N
+(03\) && \(curr_L == 0x02\)\)\){) N
+() S 8 T () S 16 T () S 24 T () S
+(//rotate left, count down!) c n
+() p 8 T () S 16 T () S 24 T () S
+(//ch_enc_cnt\(0\);) c n
+() p 8 T () S 16 T () S 24 T (set_time_\(0\);) N
+() S 8 T () S 16 T () S 24 T (set_alarm_\(0\);) N
+() S 8 T () S 16 T () S 24 T (set_radio\(0\);) N
+() S 8 T () S 16 T (}) N
+(lab6.c) (Page 13/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(if) K
+( \(curr_R != prev_R\){ ) p
+(//check state right encoder) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(\(\(prev_R == 0x01\) && \(curr_R == 0x03\)\) || \(\(prev_R == 0x03\) ) p n
+(&& \(curr_R == 0x02\)\) || \(\(prev_R == 0x02\) && \(curr_R == 0x00\)\) || \(\(prev_R == 0x) N
+(00\) && \(curr_R == 0x01\)\)\){) N
+() S 8 T () S 16 T () S 24 T () S
+(//rotate right, count up!) c n
+() p 8 T () S 16 T () S 24 T () S
+(//ch_enc_cnt\(1\);) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(volume <= 80\) {) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (volume += 10;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(/*if \(!bargraph_o\){) c n
+() S 8 T () S 16 T () S 24 T () S 32 T (bargraph_o = 0b1000000;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T (bargraph_o |= bargraph_o >> 1;*/) N
+() p 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(if) K
+( \(\(\(prev_R == 0x02\) && \(curr_R == 0x03\)\) || \(\(prev_R == 0x00\) ) p n
+(&& \(curr_R == 0x01\)\) || \(\(prev_R == 0x01\) && \(curr_R == 0x03\)\) || \(\(prev_R == 0x) N
+(03\) && \(curr_R == 0x02\)\)\){) N
+() S 8 T () S 16 T () S 24 T () S
+(//rotate left, count down!) c n
+() p 8 T () S 16 T () S 24 T () S
+(//ch_enc_cnt\(0\);) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(volume >= 10\) {) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (volume -= 10;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(//bargraph_o = bargraph_o << 1;) c n
+() p 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (OCR3A = \(volume * 4.6\);) N
+() S 8 T (}) S 16 T () N
+(}) N
+() N
+(/*************************************************************************/) c n
+(//                           rd_wr_SPI) N
+(//) S 8 T (reads and writes data to and from the SPI interface) N
+(/*************************************************************************/) N
+(void) k
+( rd_wr_SPI\(\){) p n
+() S 8 T () S
+(//enable SH/LD_n) c n
+() p 8 T (PORTE |=   0x40;) N
+() S 8 T () N
+() S 8 T (SPDR = bargraph_o;) N
+() S 8 T (encoder_data = SPDR;) N
+() S 8 T () N
+() S 8 T () S
+(while) K
+( \(bit_is_clear\(SPSR, SPIF\)\){};) p n
+() S 8 T () N
+() S 8 T () S
+(//disable SH/LD_n) c n
+() p 8 T (PORTE &= ~\(0x40\);) N
+() S 8 T () N
+() S 8 T (PORTB |= 0x01;     ) S
+(//HC595 output reg - rising edge...) c n
+() p 8 T (PORTB &= ~\(0x01\);    ) S
+(//and falling edge) c n
+(}) p n
+() N
+(/*************************************************************************/) c n
+(//                           chk_sw) N
+(//) S 8 T (reads switch input) N
+(/*************************************************************************/) N
+(void) k
+( chk_sw\(\){) p n
+() S 8 T () N
+() S 8 T (DDRA = 0x00;) N
+() S 8 T (set_PORTA_7seg\(16\);) N
+() N
+() S 8 T () S
+(//enable tristate buffer for pushbutton switches) c n
+() p 8 T (set_PORTB\(0\);) N
+() S 8 T () N
+(lab6.c) (Page 14/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (7/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (15-16) 8
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S
+(//check sw0 or sw1 for mode change) c n
+() p 8 T (_delay_us\(50\);) N
+() S 8 T () S
+(if) K
+(\(debounce_switch\(0\)\){ ) p
+(//setting clock time) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(setting_time\){setting_time = FALSE;}) p n
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (setting_time = TRUE;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(setting_alarm\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (setting_alarm = FALSE;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(setting_radio\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (setting_radio = FALSE;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(debounce_switch\(1\)\){ ) p
+(//setting alarm time) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(setting_alarm == 1\){setting_alarm = 0;}) p n
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (setting_alarm = 1;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(setting_time\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (setting_time = FALSE;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(alarm_armed\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_armed = FALSE;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(setting_radio\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (setting_radio = FALSE;) N
+() S 8 T () S 16 T () S 24 T () S
+(//if alarm not set, set it to current time for simplicit) c n
+(y) N
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(\(alarm_time.hours == 0 && alarm_time.minutes == 0\) &) p n
+(& !alarm_armed\){) N
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_time.hours = clock_time.hours;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_time.minutes = clock_time.minutes;) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(debounce_switch\(2\)\){ ) p
+(//will toggle the alarm armed or not) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(alarm_armed == 1\){) p n
+() S 8 T () S 16 T () S 24 T (alarm_armed = 0; ) N
+() S 8 T () S 16 T () S 24 T (update_lcd\(\);) N
+() S 8 T () S 16 T () S 24 T (snooze_en = FALSE;) N
+() S 8 T () S 16 T () S 24 T (snooze_counter = 0;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(alarm_triggered\){alarm_triggered = FALSE;}) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(radio_en\) {) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (toggle_radio\(\);) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (alarm_armed = 1;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(setting_alarm\){setting_alarm = FALSE;}) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(alarm_triggered\){alarm_triggered = FALSE;}) p n
+() S 8 T () S 16 T () S 24 T () S
+(//update lcd panel with latest information) c n
+() p 8 T () S 16 T () S 24 T (update_lcd\(\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(debounce_switch\(3\)\){ ) p
+(//will hit snooze) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(alarm_triggered && alarm_armed\){) p n
+() S 8 T () S 16 T () S 24 T (snooze_en = TRUE;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(debounce_switch\(4\)\){ ) p
+(//toggle alarm mode between radio and tune) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(!alarm_triggered\) {) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(alarm_mode\) alarm_mode = FALSE;) p n
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( alarm_mode = TRUE;) p 48 T () N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T (update_lcd\(\);) N
+() S 8 T (}) N
+(lab6.c) (Page 15/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S
+(if) K
+( \(debounce_switch\(5\)\){ ) p
+(//toggle radio on/off) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(!alarm_armed\){ ) p
+(//do nothing if alarm is armed \(i.e.\) cannot ) c n
+(turn radio on.) N
+() p 8 T () S 16 T () S 24 T (toggle_radio\(\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(debounce_switch\(6\)\){) p n
+() S 8 T () S 16 T () S
+(if) K
+( \(!setting_radio\){) p n
+() S 8 T () S 16 T () S 24 T (setting_radio = TRUE;) N
+() S 8 T () S 16 T () S 24 T (setting_alarm = FALSE;) N
+() S 8 T () S 16 T () S 24 T (setting_time = FALSE;) N
+() S 8 T () S 16 T (} ) S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (setting_radio = FALSE;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(debounce_switch\(7\)\){) p n
+() S 8 T () S 16 T () S
+(//hardware reset of Si4734) c n
+() p 8 T () S 16 T (PORTE &= ~\(1<<PE7\); ) N
+() S 8 T () S 16 T (DDRE  |= 0x80;     ) N
+() S 8 T () S 16 T (PORTE |=  \(1<<PE2\); ) N
+() S 8 T () S 16 T (_delay_us\(200\);        ) N
+() S 8 T () S 16 T (PORTE &= ~\(1<<PE2\);) N
+() S 8 T () S 16 T (_delay_us\(30\);      ) N
+() S 8 T () S 16 T (DDRE  &= ~\(0x80\);  ) N
+() S 8 T () S 16 T (fm_pwr_up\(\); ) S
+(//powerup  fm radio) c n
+() p 8 T () S 16 T (fm_tune_freq\(\);) N
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(static) K
+( uint8_t prev_vol = 0;) p n
+() S 8 T () S
+(if) K
+( \(prev_vol != volume\){) p n
+() S 8 T () S 16 T (bargraph_o = 0xFF;) N
+() S 8 T () S 16 T (bargraph_o = bargraph_o >> \(volume/10\);) N
+() S 8 T () S 16 T (bargraph_o ^= 0xFF;) N
+() S 8 T () S 16 T (prev_vol = volume;) N
+() S 8 T (}) N
+() S 8 T () N
+() S 8 T () S
+(//disable tristate buffer for pushbutton switches) c n
+() p 8 T (set_PORTB\(1\);) N
+() S 8 T () N
+() S 8 T () S
+(//make PORTA an output) c n
+() p 8 T (DDRA = 0xFF;) N
+() S 8 T () N
+(}) N
+() N
+(/*************************************************************************/) c n
+(//                           setup_adc) N
+(//) S 8 T (sets up ADC and initializes Timer 2) N
+(/*************************************************************************/) N
+(void) k
+( setup_adc\(\){) p n
+() S 8 T (ADMUX  = \(1<<REFS0\); ) S
+(//single-ended input, PORTF bit 1, right adjusted, ) c n
+(10 bits) N
+(                                         ) p
+(//reference is AVCC) c n
+() p n
+() S 8 T (ADCSRA = \(1<<ADEN\) | \(1<<ADPS0\) | \(1<<ADPS1\) | \(1<<ADPS2\); ) S
+(//ADC enabled) c n
+(, don't start yet, single shot mode ) N
+(                                         ) p
+(//division factor is 128 \(125khz\)) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T ( ) N
+() S 8 T (TCCR2 = \(1<<WGM21\) | \(1<<WGM20\) ) S
+(/*Fast PWM*/) c
+( | \(1<<COM21\) ) p
+(/*clear on com) c n
+(pare match*/) S
+( | \(1<<CS21\) | \(1<<CS20\) ) p
+(/*64 prescale*/) c
+(;) p n
+() S 8 T (OCR2 = 255/5;) N
+(}) N
+() N
+(lab6.c) (Page 16/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (8/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (17-18) 9
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(/*************************************************************************/) c n
+(//                           update_brightness) N
+(//) S 8 T (reads ADC and updates display brightness) N
+(/*************************************************************************/) N
+(void) k
+( update_brightness\(\){) p n
+() S 8 T (ADCSRA |=  \(1<<ADSC\);) S
+(//poke the ADSC bit and start conversion) c n
+() p n
+() S 8 T () S
+(while) K
+(\(bit_is_clear\(ADCSRA, ADIF\)\);) p
+(//spin while interrupt flag not set) c n
+() p n
+() S 8 T (ADCSRA |=  \(1<<ADIF\);     ) S
+(//its done, clear flag by writing a one ) c n
+() p n
+() S 8 T (uint16_t adc_result = ADC;) N
+() S 8 T () N
+() S 8 T (div_t voltage = div\(adc_result, 205\);) N
+() S 8 T () S
+(//4.8 = max light, 0.16 = min light) c n
+() p 8 T (uint8_t voltage_v = voltage.quot;) N
+() S 8 T () N
+() S 8 T () S
+(if) K
+( \(voltage_v < 1\)) p n
+() S 8 T () S 16 T (voltage_v = 1;) N
+() S 8 T () N
+() S 8 T () S
+(//100 = max brightness, 25 = min brightness) c n
+() p 8 T (uint8_t voltage_p = voltage_v*25;) N
+() S 8 T () N
+() S 8 T (uint8_t brightness_val = \(uint8_t\) 255-\(255*voltage_p/100\);) N
+() S 8 T () N
+() S 8 T (OCR2 = brightness_val;) S
+(//brightness_val;) c n
+(}) p n
+() N
+(/***********************************************************************/) c n
+(//                              tcnt0_init                             ) N
+(//Initializes timer/counter0 \(TCNT0\). TCNT0 is running in async mode) N
+(//with external 32khz crystal.  Runs in normal mode with no prescaling.) N
+(//Interrupt occurs at overflow 0xFF.) N
+(//) N
+(void) k
+( tcnt0_init\() p
+(void) k
+(\){) p n
+() S 8 T (ASSR   |=  \(1 << AS0\);  ) S
+(//ext osc TOSC) c n
+() p 8 T (TIMSK  |=  \(1 << TOIE0\);  ) S
+(//enable timer/counter0 overflow interrupt) c n
+() p 8 T (TCCR0 |= \(1<<CS00\); ) S
+(//normal mode no prescaler) c n
+(}) p n
+() N
+(/*************************************************************************/) c n
+(//                           timer/counter0 ISR   ) N
+(//) S 8 T (timer counter 0 overflow interrupt about 128hz, close to 128.5hz. ) N
+(//) S 8 T (used 128 for simplicity, should be close enough. ) N
+(/*************************************************************************/) N
+(ISR\(TIMER0_OVF_vect\){) p 24 T () N
+() S 8 T (clock_counter++;) N
+() S 8 T () S
+(if) K
+( \(clock_counter == 128\){ ) p
+(//about 1hz) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(setting_time == FALSE\){) p n
+() S 8 T () S 16 T () S 24 T (clock_time.seconds++;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(clock_time.seconds == 60\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (clock_time.seconds = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T (clock_time.minutes++;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(clock_time.minutes == 60\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (clock_time.minutes = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (clock_time.hours++;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S
+(if) K
+( \(clock_time.hours >= 24\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T (clock_time.hours = 0;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (}) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T (}) S 32 T () N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(clock_time.seconds == alarm_time.seconds && clock_ti) p n
+(lab6.c) (Page 17/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(me.minutes == alarm_time.minutes && clock_time.hours == alarm_time.hours\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(alarm_armed\){) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S
+(//music_idx = 0;) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T (alarm_triggered = TRUE;) N
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S
+(//if \(alarm_mode == 1 && !radio_en\)) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T () S 48 T () S
+(//toggle_radio\(\);) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S 40 T (update_lcd\(\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T (}) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(//Blink colon every second) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(colon_en == colon_off\){) p n
+() S 8 T () S 16 T () S 24 T (colon_en = colon_on;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (colon_en = colon_off;) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%64 == 0\) { ) p
+(//about 2hz) c n
+() p 8 T () N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%32 == 0\) { ) p
+(//about 4hz) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(alarm_triggered\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(music_idx > max_music_idx\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (music_idx = 0;) N
+() S 8 T () S 16 T () S 24 T (OCR1A = fight_song[music_idx];) N
+() S 8 T () S 16 T () S 24 T (music_idx++;) N
+() S 8 T () S 16 T (} ) S
+(else) K
+( {) p n
+() S 8 T () S 16 T () S 24 T (music_idx = 0;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%16 == 0\) { ) p
+(//about 8hz) c n
+() p 8 T () S 16 T (twi_start_rd\(LM73_ADDRESS, lm73_rd_buf, 2\);) N
+() S 8 T () S 16 T (lm73_tmp_in = lm73_rd_buf[0]; ) S
+(//save high temperature byte into ) c n
+(lm73_temp) N
+() p 8 T () S 16 T (lm73_tmp_in = \(lm73_tmp_in << 8\); ) S
+(//shift it into upper byte ) c n
+() p 8 T () S 16 T (lm73_tmp_in |= lm73_rd_buf[1]; ) S
+(//"OR" in the low temp byte to lm) c n
+(73_temp ) N
+() p 8 T () S 16 T (itoa\(lm73_tmp_in >> 7, lcd_string_array, 10\); ) S
+(//can make faster ) c n
+(by using int3lcd?) N
+() p 8 T () S 16 T (strcpy\(raw_tmp_val, lcd_string_array\);) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%8 == 0\){ ) p
+(//about 16hz) c n
+() p 8 T () S 16 T () N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%4 == 0\){ ) p
+(//about 32hz) c n
+() p 8 T () N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%2 == 0\){ ) p
+(//about 64hz) c n
+() p 8 T () S 16 T () S
+(if) K
+( \(snooze_en\){ ) p
+(//check for snooze;) c n
+() p 8 T () S 16 T () S 24 T (snooze_counter++;) N
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(snooze_counter == 640\){ ) p
+(//10 second snooze done) c n
+() p 8 T () S 16 T () S 24 T () S 32 T (snooze_counter = 0; ) S
+(//reset counter) c n
+() p 8 T () S 16 T () S 24 T () S 32 T (snooze_en = FALSE; ) S
+(//disable snooze) c n
+() p 8 T () S 16 T () S 24 T () S 32 T (alarm_triggered = TRUE; ) S
+(//trigger alarm again) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(//if\(!radio_en && alarm_mode == 1\)) c n
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(//) c 40 T (toggle_radio\(\);) N
+() p 8 T () S 16 T () S 24 T () S 32 T (update_lcd\(\);) N
+() S 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( {) p n
+(lab6.c) (Page 18/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (9/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (19-20) 10
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S 24 T () S 32 T () S
+(if) K
+( \(snooze_counter == 1 || !snooze_counter\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T () S 40 T (update_lcd\(\);) N
+() S 8 T () S 16 T () S 24 T () S 32 T (alarm_triggered = FALSE; ) S
+(//turn alarm off) c n
+() p 8 T () S 16 T () S 24 T (}) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter%1 == 0\){ ) p
+(//about 128hz) c n
+() p 8 T () S 16 T () S
+(//read and write from SPI) c n
+() p 8 T () S 16 T (rd_wr_SPI\(\);) N
+() S 8 T () S 16 T () S
+(//check encoder status) c n
+() p 8 T () S 16 T (chk_encoder\(\);) N
+() S 8 T () S 16 T () N
+() S 8 T (}) N
+() S 8 T () S
+(if) K
+( \(clock_counter == 128\){) p n
+() S 8 T () S 16 T (clock_counter = 0;) N
+() S 8 T () S 16 T (update_tmp_lcd\(\);) N
+() S 8 T () S 16 T (uart_putc\(') S
+(T) str
+('\);) p n
+() S 8 T (} ) S
+(//clear counter on 1hz) c n
+(}) p n
+() N
+(/*************************************************************************/) c n
+(//                           init_alarm_ctrl) N
+(//) S 8 T (initializes Timer 1 and 3 for alarm and volume) N
+(/*************************************************************************/) N
+(void) k
+( init_alarm_ctrl\(\){) p n
+() S 8 T () S
+(//TCNT3 \(volume control\)) c n
+() p 8 T (TCCR3A |= \(1<<COM3A1\) ) S
+(/*clear on compare match*/) c
+( | \(1<<WGM31\) ) p
+(/*Mode 6*/) c
+() p n
+(;) N
+() S 8 T (TCCR3B |= \(1<<WGM32\) ) S
+(/*Mode 6*/) c
+( | \(1<<CS31\) ) p
+(/*Prescaler 8*/) c
+(;) p n
+() S 8 T (TCCR3C |= 0x00;) N
+() S 8 T () S
+(//set volume  \(256 is 50% duty cycle\)) c n
+() p 8 T () S
+(//set min volume to be 4.6 \(1%\) and max to be 460 \(100%\)) c n
+() p 8 T () S
+(//460 is about 90% of max volume and 4.6 about 0.9%) c n
+() p 8 T (OCR3A = \(volume * 4.6\);) N
+() N
+() S 8 T () S
+(//TCNT1 \(Alarm PWM\)) c n
+() p 8 T (TCCR1A |= 0x00;) N
+() S 8 T (TCCR1B |= \(1<<WGM12\) | \(1<<CS10\);) N
+() S 8 T (TCCR1C |= 0x00;) N
+() S 8 T (TIMSK  |= \(1<<OCIE1A\);) N
+() S 8 T () S
+(//set frequency) c n
+() p 8 T (OCR1A = alarm_freq;) N
+(}) N
+() N
+(ISR\(TIMER1_COMPA_vect\){) N
+() S 8 T () S
+(if) K
+( \(alarm_triggered && alarm_armed && alarm_mode == 0\){) p n
+() S 8 T () S 16 T (PORTD ^= 0x10; ) S
+(//Toggle audio output bit) c n
+() p 8 T (}) N
+() S 8 T () S
+(else) K
+( {) p n
+() S 8 T () S 16 T (PORTD &= 0b11101111; ) S
+(//keep alarm off) c n
+() p 8 T () S 16 T () S
+(//alarm_triggered = FALSE;) c n
+() p 8 T (}) N
+(}) N
+() N
+(ISR\(USART0_RX_vect\){) N
+() S 8 T (usart_rx_char = UDR0;) N
+(#ifndef) K
+( MASTER) p n
+() S 8 T () S
+(//static  uint8_t  usart_idx2;) c n
+() p 8 T () S
+(//usart_str_array[usart_idx++]=usart_rx_char;  //store in array ) c n
+() p 8 T () S
+(//if entire string has arrived, set flag, reset index) c n
+() p 8 T () S
+(if) K
+(\(usart_rx_char == ') p
+(T) str
+('\){) p n
+() S 8 T () S 16 T () S
+(//usart_rcv_rdy=1; ) c n
+(lab6.c) (Page 19/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () S 16 T () S
+(//usart_str_array[--usart_idx]  = \(' '\);     //clear the count f) c n
+(ield) N
+() p 8 T () S 16 T () S
+(//usart_idx =0;  ) c n
+() p 8 T () S 16 T (uart_putc\(raw_tmp_val[0]\);) N
+() S 8 T () S 16 T (uart_putc\(raw_tmp_val[1]\);) N
+() S 8 T () S 16 T (uart_putc\(') S
+(\\0) str
+('\);) p n
+() S 8 T () S 16 T () S
+(return) K
+(;) p n
+() S 8 T (}) N
+(#endif) K n
+() p 8 T () S
+(if) K
+( \(usart_rx_char == ') p
+(T) str
+('\){) p n
+() S 8 T () S 16 T () S
+(return) K
+(;) p n
+() S 8 T (}) N
+() S 8 T () S
+(static) K
+(  uint8_t  usart_idx;) p n
+() S 8 T () S
+(//usart_rx_char = UDR0;              //get character) c n
+() p 8 T (usart_str_array[usart_idx++]=usart_rx_char;  ) S
+(//store in array ) c n
+() p 8 T () S
+(//if entire string has arrived, set flag, reset index) c n
+() p 8 T () S
+(if) K
+(\(usart_rx_char == ') p
+(\\0) str
+('\){) p n
+() S 8 T () S 16 T (usart_rcv_rdy=1; ) N
+() S 8 T () S 16 T () S
+(//usart_str_array[--usart_idx]  = \(' '\);     //clear the count f) c n
+(ield) N
+() p 8 T () S 16 T (usart_idx =0;  ) N
+() S 8 T (}) N
+(}) N
+() N
+(ISR\(INT7_vect\){STC_interrupt = TRUE;}) N
+() N
+(void) k
+( radio_init\(\){) p n
+() S 8 T (DDRE  |= 0x04; ) S
+(//Port E bit 2 is active high reset for radio ) c n
+() p 8 T (PORTE |= 0x04; ) S
+(//radio reset is on at powerup \(active high\)) c n
+() p n
+() S 8 T (EICRB |= \(1<<ISC71\) | \(1<ISC70\);) N
+() S 8 T (EIMSK |= \(1<<INT7\);) N
+() S 8 T () N
+() S 8 T () S
+(//hardware reset of Si4734) c n
+() p 8 T (PORTE &= ~\(1<<PE7\); ) N
+() S 8 T (DDRE  |= 0x80;     ) N
+() S 8 T (PORTE |=  \(1<<PE2\); ) N
+() S 8 T (_delay_us\(200\);        ) N
+() S 8 T (PORTE &= ~\(1<<PE2\);) N
+() S 8 T (_delay_us\(30\);      ) N
+() S 8 T (DDRE  &= ~\(0x80\);   ) N
+(}) N
+() N
+(/*************************************************************************/) c n
+(//                           init_values) N
+(//) S 8 T (initializes necessary values) N
+(/*************************************************************************/) N
+(void) k
+( init_values\(\){) p n
+() S 8 T () N
+() S 8 T (alarm_time.minutes = 0;) N
+() S 8 T (alarm_time.seconds = 0;) N
+() S 8 T (alarm_time.hours = 0;) N
+() S 8 T (clock_time.seconds = 0;) N
+() S 8 T (clock_time.hours = 0;) N
+() S 8 T (clock_time.minutes = 0;) N
+() S 8 T (clock_counter = 0;) N
+() S 8 T () N
+() S 8 T () S
+(//set port bits 4-7 B as outputs) c n
+() p 8 T (DDRB |= 0b11110000;) N
+() S 8 T () S
+(//port E as output) c n
+() p 8 T (DDRE |= 0xff;) N
+() S 8 T (PORTE |= 0x04;) N
+(lab6.c) (Page 20/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (10/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (21-22) 11
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T () N
+() S 8 T () S
+(//port F as input) c n
+() p 8 T (DDRF = 0x00;) N
+() S 8 T (PORTF = 0x00;) N
+() S 8 T () N
+() S 8 T () S
+(//audio output) c n
+() p 8 T (DDRD |= 0x10;) N
+() S 8 T () N
+() S 8 T () S
+(//initialize globals) c n
+() p 8 T (encoder_count = 0;) N
+() S 8 T (encoder_data = 0;) N
+() S 8 T (bargraph_o = 0;) N
+() S 8 T (inc_2 = 0;) N
+() S 8 T (inc_4 = 0;) N
+() S 8 T (segsum_hex_en = 0;) N
+() N
+() S 8 T () S
+(//init counters, lcd, and volume/buzzer) c n
+() p 8 T (tcnt0_init\(\);  ) S
+(//initalize counter timer zero) c n
+() p 8 T (uart_init\(\);) N
+() S 8 T (spi_init\(\);    ) S
+(//initalize SPI port) c n
+() p 8 T (lcd_init\(\);) N
+() S 8 T (init_twi\(\);) N
+() S 8 T () N
+() S 8 T (string2lcd\(") S
+(Starting TMP) str
+("\);) p n
+() S 8 T () S
+(/*CHANGED HERE, CHECK IF TMP STILL WORKS - Seems to work just fine...*/) c n
+() p 8 T (lm73_wr_buf[0] = 0x00; ) S
+(//load lm73_wr_buf[0] with temperature pointer ad) c n
+(dress) N
+() p 8 T (twi_start_wr\(LM73_ADDRESS, lm73_wr_buf, 1\);  ) S
+(//start the TWI write proce) c n
+(ss) N
+() p 8 T (_delay_ms\(2\);    ) S
+(//wait for the xfer to finish) c n
+() p 8 T () N
+() S 8 T (clear_display\(\);) N
+() S 8 T () N
+() S 8 T (string2lcd\(") S
+(Starting Alarm) str
+("\);) p n
+() S 8 T (init_alarm_ctrl\(\);) N
+() S 8 T (setup_adc\(\);) N
+() S 8 T () N
+() S 8 T (clear_display\(\);) N
+() S 8 T () N
+() S 8 T (string2lcd\(") S
+(Starting Radio) str
+("\);) p n
+() S 8 T (radio_init\(\);) N
+() S 8 T () N
+() S 8 T (clear_display\(\);) N
+() S 8 T () N
+() S 8 T (rd_wr_SPI\(\);) N
+(}) N
+() N
+(void) k
+( main\(\)) p n
+({) N
+() S 8 T (init_values\(\);) N
+() S 8 T (sei\(\);         ) S
+(//enable interrupts before entering loop) c n
+() p 8 T () N
+() S 8 T () S
+(//hardware reset of Si4734) c n
+() p 8 T (PORTE &= ~\(1<<PE7\); ) N
+() S 8 T (DDRE  |= 0x80;     ) N
+() S 8 T (PORTE |=  \(1<<PE2\); ) N
+() S 8 T (_delay_us\(200\);        ) N
+() S 8 T (PORTE &= ~\(1<<PE2\);) N
+() S 8 T (_delay_us\(30\);      ) N
+() S 8 T (DDRE  &= ~\(0x80\);   ) N
+() S 8 T () N
+() S 8 T (string2lcd\(") S
+(Powering Radio U) str
+("\);) p n
+(lab6.c) (Page 21/22) (Dec 02, 21 22:10) title
+border
+/v 1 store
+/x0 x v get 3.362408 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p 8 T (fm_pwr_up\(\); ) S
+(//powerup  fm radio) c n
+() p 8 T (clear_display\(\);) N
+() S 8 T (string2lcd\(") S
+(Tunning Radio) str
+("\);) p n
+() S 8 T (fm_tune_freq\(\); ) S
+(//tune radio to frequency) c n
+() p 8 T () S
+(while) K
+(\(STC_interrupt == FALSE\){}) p n
+() S 8 T (fm_rsq_status\(\);) N
+() S 8 T (clear_display\(\);) N
+() S 8 T (string2lcd\(") S
+(Set Volume) str
+("\);) p n
+() S 8 T (set_property\(0x4000, 0x0000\);) N
+() S 8 T () N
+() S 8 T (clear_display\(\);) N
+() S 8 T (update_lcd\(\);) N
+() S 8 T () N
+() S 8 T () S
+(while) K
+(\(1\){) p n
+() S 8 T () S 16 T () S
+(//check switch press) c n
+() p 8 T () S 16 T (chk_sw\(\);) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(//update clock time) c n
+() p 8 T () S 16 T (segsum_clock\(\);) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(//update brightness) c n
+() p 8 T () S 16 T (update_brightness\(\);) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(//update 7-seg displays \(takes about 1.5ms\)) c n
+() p 8 T () S 16 T () S
+(for) K
+( \(uint8_t i = 0; i < 5; i++\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(//update digit to display) c n
+() p 8 T () S 16 T () S 24 T () S
+(if) K
+( \(setting_radio && i == 1\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (set_PORTA_7seg_rad\(segment_data[i]\);) N
+() S 8 T () S 16 T () S 24 T () S
+(else) K
+( ) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (set_PORTA_7seg\(segment_data[i]\);) N
+() S 8 T () S 16 T () S 24 T (set_PORTB\(i+1\); ) S
+(//send PORTB the digit to display) c n
+() p 8 T () S 16 T () S 24 T (_delay_us\(300\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(if) K
+( \(freq_change\){) p n
+() S 8 T () S 16 T () S 24 T (STC_interrupt = FALSE;) N
+() S 8 T () S 16 T () S 24 T (fm_tune_freq\(\);) N
+() S 8 T () S 16 T () S 24 T (freq_change = FALSE;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(if) K
+( \(req_update_ss && STC_interrupt\){) p n
+() S 8 T () S 16 T () S 24 T (fm_rsq_status\(\);) N
+() S 8 T () S 16 T () S 24 T (req_update_ss = FALSE;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () N
+() S 8 T () S 16 T () S
+(if) K
+( \(!alarm_triggered && !radio_en && OCR3A != 0\){) p n
+() S 8 T () S 16 T () S 24 T (OCR3A = 0;) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+( \(\(radio_en || alarm_triggered\) && OCR3A == 0\){) p n
+() S 8 T () S 16 T () S 24 T (OCR3A = \(volume * 4.6\);) N
+() S 8 T () S 16 T (}) N
+() N
+() S 8 T () S 16 T () S
+(if) K
+( \(alarm_triggered && alarm_mode == 1 && alarm_armed\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(!radio_en\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (toggle_radio\(\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T () S 16 T () S
+(else) K
+( ) p
+(if) K
+( \(alarm_armed && alarm_mode == 1 && !alarm_triggered\){) p n
+() S 8 T () S 16 T () S 24 T () S
+(if) K
+( \(radio_en\)) p n
+() S 8 T () S 16 T () S 24 T () S 32 T (toggle_radio\(\);) N
+() S 8 T () S 16 T (}) N
+() S 8 T (}) S
+(//while) c n
+(}) p
+(//main) c n
+(lab6.c) (Page 22/22) (Dec 02, 21 22:10) title
+border
+grestore
+(Printed by ) rhead
+(lab6.c) (11/11) (Friday December 03, 2021) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF
